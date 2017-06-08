@@ -110,6 +110,10 @@ $( function() {
       }).get();
       if (map_service_id.length > 0 && layer_list_name.length > 0 && layer_catalog_name.length > 0) {
         n_datasets_wom = map_service_id.filter(String).length
+        var mservices = map_service_id.filter(function(elem, index, self) {
+            return index == self.indexOf(elem);
+        })
+        mservices = mservices.join(',');
         var all_fields = [];
         var layer_list_name_all = []
         for (var i = 0; i < n_datasets_wom; i++) {
@@ -123,7 +127,7 @@ $( function() {
           layer_list_name_all.push(layer_list_name[i])
         }
         layer_list_name_all = layer_list_name_all.join(',');
-        main_link = 'http://geo.dev.edptest.info/EDP_DEV_Viewer/Index.html?viewer=EDP_DEV_Viewer&locale=en-AU&runWorkflow=AppendLayerCatalog&CatalogLayer=' + cataloglayer + '&MapServiceID=' + map_service_id[0] + '&LayerListName=' + layer_list_name_all;
+        main_link = 'http://geo.dev.edptest.info/EDP_DEV_Viewer/Index.html?viewer=EDP_DEV_Viewer&locale=en-AU&runWorkflow=AppendLayerCatalog&CatalogLayer=' + cataloglayer + '&MapServiceID=' + mservices + '&LayerListName=' + layer_list_name_all;
         view_on_map.removeClass('seed-disabled');
         view_on_map.attr('href', main_link);
         view_on_map.attr('title', 'Show selected Dataset on Map');
