@@ -1760,11 +1760,14 @@ section.module.module-narrow.dataset-map .module-heading {
   height: 14px;
 }
 .seed-datasets .dataset-resources {
-  margin-top: 40px;
+  margin-top: 15px;
   margin-bottom: 12px;
 }
 .seed-datasets .dataset-resources .seed-dataset-resource-item {
   background-color: #95a5a6;
+}
+.seed-extra {
+  padding: 0 10px;
 }
 .seed-dataset-item .seed-dataset,
 .seed-dataset-item .seed-dataset-resource {
@@ -2007,6 +2010,9 @@ section.module.module-narrow.dataset-map .module-heading {
 }
 .seed-facet-list-button:hover {
   background-color: #460a5c;
+}
+.seed-secondary-block {
+  margin-bottom: 10px;
 }
 .seed-secondary-block .seed-facet-title {
   color: #c04deb;
@@ -2473,7 +2479,7 @@ section.module.module-narrow.dataset-map .module-heading {
 .dataset-item:last-of-type {
   border-bottom: 1px solid #ecf0f1;
   margin-bottom: 20px;
-  padding-bottom: 0;
+  padding-bottom: 5px;
 }
 .dataset-heading .label {
   position: relative;
@@ -2778,6 +2784,9 @@ section.module.module-narrow.dataset-map .module-heading {
 }
 #content .seed-dataset-item .dataset-resources .seed-dataset-resource-item {
   background-color: #95a5a6;
+}
+#content .seed-dataset-item .dataset-content {
+  margin-bottom: 25px;
 }
 .seed-module-heading {
   background-color: #29a8f1;
