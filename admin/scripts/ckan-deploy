@@ -1,0 +1,361 @@
+#!/usr/bin/env bash
+
+extensions=()
+environments="prod uat dev"
+ckan_branch_prefix="seed-"
+ckanext_branch_prefix="seed-"
+config_directory="/etc/ckan/seed"
+
+# Check arguments
+if [[ -d $1 ]]
+then
+    venv_path=${1%/}
+else
+    echo "${1} is not a directory, first argument needs to be the base directory of the CKAN virtual environment... exiting..."
+    exit
+fi
+
+env=$2
+if [[ " $environments " =~ " $env " ]]
+then
+    echo "Starting ${env} deployment..."
+else
+    echo "Please enter in either 'prod', 'dev' or 'uat' as second argument... exiting..."
+    exit
+fi
+
+# Build extension list
+if [[ -d $config_directory ]]
+then
+    extensions+=("config")
+fi
+for entry in ${venv_path}"/src"/*
+do
+    if [[ -d $entry ]] && [[ $entry == *"ckan"* ]]
+    then
+	extension_name=${entry#${venv_path}"/src/"}
+	extension_name=${extension_name#"ckanext-"}
+	extensions+=($extension_name)
+    fi
+done
+
+if [ ${#extensions[@]} -eq 0 ]
+then
+    echo "No extensions found in source directory, exiting..."
+    exit
+fi
+
+# Unset any AWS specific install layout
+unset PYTHON_INSTALL_LAYOUT
+
+# Activate environment
+source ${venv_path}"/bin/activate"
+
+for ext in ${extensions[@]}
+do
+    if [ "$ext" = "ckan" ] || [ "$ext" = "config" ]
+    then
+        prefix=""
+        branch_prefix=$ckan_branch_prefix
+    else
+        prefix="ckanext-"
+        branch_prefix=$ckanext_branch_prefix
+    fi
+
+    while true
+    do
+        read -p "Do you wish to update ${prefix}${ext}? [Y/N] " yn
+        case $yn in
+            [Yy]* )
+                # Do git checks to see if we need to do an update
+                if [ "$ext" = "config" ]
+                then
+                    cd ${config_directory}
+                else
+                    cd ${venv_path}"/src/"${prefix}${ext}
+                fi
+
+                # Find origin
+                case $ext in
+                    ckan )
+                        origin="https://git.links.com.au/clients/link-ckan.git";;
+                    config )
+                        origin="http://gitlab/edpportal/ckan-config.git";;
+                    excelimport )
+                        origin="https://github.com/DataShades/ckanext-excelimport.git";;
+                    extend-search )
+                        origin="https://github.com/DataShades/ckanext-extend-search.git";;
+                    googleanalytics )
+                        origin="https://github.com/DataShades/ckanext-googleanalytics.git";;
+                    message )
+                        origin="https://github.com/DataShades/ckanext-message.git";;
+                    officedocs )
+                        origin="https://github.com/DataShades/ckanext-officedocs.git";;
+                    pdfview )
+                        origin="https://github.com/ckan/ckanext-pdfview.git";;
+                    s3filestore )
+                        origin="https://github.com/DataShades/ckanext-s3filestore.git";;
+                    scheming )
+                        origin="https://github.com/DataShades/ckanext-scheming.git";;
+                    seedplugin )
+                        origin="https://github.com/DataShades/ckanext-seedplugin.git";;
+                    spatial )
+                        origin="https://github.com/DataShades/ckanext-spatial.git";;
+                    visualise_on_map )
+                        origin="https://github.com/DataShades/ckanext-visualise_on_map.git";;
+                    workflow )
+                        origin="https://github.com/DataShades/ckanext-workflow.git";;
+                    * )
+                        origin="";;
+                esac
+
+                current_origin=$(git config --get remote.origin.url)
+
+                if [ -z "$origin" ]
+                then
+                    echo "Could not find a default origin for ${ext}, continuing..."
+                elif [ "$origin" = "$current_origin" ]
+                then
+                    echo "Git remote origin aligns with default, continuing..."
+                else
+                    echo "Git remote origin differs from the default."
+                    while true
+                    do
+                        read -p "Do you wish to change the remote origin from ${current_origin} to ${origin}? [Y/N] " yn
+                        case $yn in
+                            [Yy]* )
+                                git remote set-url origin ${origin}
+                                break;;
+                            [Nn]* )
+                                break;;
+                            * )
+                                echo "Please answer y or n.";;
+                        esac
+                    done
+                fi
+
+                # Get the branch name
+                branch_name="$(git symbolic-ref HEAD 2>/dev/null)" ||
+                branch_name="(unnamed branch)"     # detached HEAD
+                branch_name=${branch_name##refs/heads/}
+
+                # Check the branch is the one we want to pull
+                if [ "$branch_name" != "$branch_prefix$env" ]
+                then
+                    echo "Branch ${branch_name} does not match expected ${prefix}${env}, continuing..."
+                fi
+
+                # Do a fetch all to ensure we have the most recent info
+                git fetch --all
+
+                # Check to see if there are uncommitted changes
+                git update-index -q --refresh
+                changed=$(git diff-index --name-only HEAD --)
+                if [ -n "$changed" ]
+                then
+                    echo "There are unstaged changes for ${prefix}${ext}"
+                    while true
+                    do
+                        read -p "Do you wish reset HEAD to origin ${branch_name}? [Y/N] " yn
+                        case $yn in
+                            [Yy]* )
+                                git reset --hard origin/${branch_name}
+                                break_out=""
+                                break;;
+                            [Nn]* )
+                                break_out="True"
+                                break;;
+                            * )
+                                echo "Please answer y or n.";;
+                        esac
+                    done
+                else
+                    break_out=""
+                fi
+
+                if [ "$break_out" != "True" ]
+                then
+                    # Do we need to pull?
+                    local=$(git rev-parse @)
+                    remote=$(git rev-parse @{u})
+                    base=$(git merge-base @ @{u})
+
+                    if [ "$local" = "$remote" ]
+                    then
+                        echo "Branch is up-to-date, skipping pull..."
+                        break_out="True"
+                    elif [ "$local" = "$base" ]
+                    then
+                        echo "Pull is needed, continuing with deployment..."
+                        break_out=""
+                    elif [ "$remote" = "$base" ]
+                    then
+                        echo "Unpushed local commits found, skipping pull..."
+                        break_out="True"
+                    else
+                        echo "Local/remote branches have diverged, skipping pull..."
+                        break_out="True"
+                    fi
+                fi
+
+                if [ "$break_out" != "True" ]
+                then
+                    while true
+                    do
+                        read -p "Do you wish to pull from ${branch_name}? [Y/N] " yn
+                        case $yn in
+                            [Yy]* )
+                                git pull origin ${branch_name}
+                                break_out=""
+                                break;;
+                            [Nn]* )
+                                break_out="True"
+                                break;;
+                            * )
+                                echo "Please answer y or n.";;
+                        esac
+                    done
+                fi
+
+                if [ "$ext" = "config" ]
+                then
+                    break
+                fi
+
+                if [ "$break_out" = "True" ]
+                then
+                    while true
+                    do
+                        read -p "Do you wish to re-install ${ext}? [Y/N] " yn
+                        case $yn in
+                            [Yy]* )
+                                break_out=""
+                                break;;
+                            [Nn]* )
+                                break_out="True"
+                                break;;
+                            * )
+                                echo "Please answer y or n.";;
+                        esac
+                    done
+                fi
+
+                if [ "$break_out" = "True" ]
+                then
+                    break
+                fi
+
+                dev_requirements=""
+                pip_requirements=""
+
+                for entry in ${venv_path}"/src/"${prefix}${ext}/*
+                do
+                    if [ "$entry" = ${venv_path}"/src/"${prefix}${ext}"/dev-requirements.txt" ]
+                    then
+                        dev_requirements=$entry
+                    fi
+                    if [ "$entry" = ${venv_path}"/src/"${prefix}${ext}"/pip-requirements.txt" ] || [ "$entry" = ${venv_path}"/src/"${prefix}${ext}"/requirements.txt" ]
+                    then
+                        pip_requirements=$entry
+                    fi
+                done
+
+                if [ "$env" != "prod" ]
+                then
+                    if [ -n "$dev_requirements" ]
+                    then
+                        echo "Installing dev requirements..."
+                        ${venv_path}"/bin/pip" install -r ${dev_requirements}
+                    else
+                        echo "Found no dev requirements to install, continuing..."
+                    fi
+                else
+                    echo "Not installing dev requirements on production deployment."
+                fi
+
+                if [ -n "$pip_requirements" ]
+                then
+                    echo "Installing pip requirements..."
+                    ${venv_path}"/bin/pip" install -r ${pip_requirements}
+                else
+                    echo "Found no pip requirements to install, continuing..."
+                fi
+
+                echo "Running python setup..."
+
+                ${venv_path}"/bin/python" setup.py develop
+                break;;
+            [Nn]* )
+                break;;
+            * )
+                echo "Please answer y or n.";;
+        esac
+    done
+done
+
+while true
+do
+    read -p "Do you wish to restart apache? [Y/N] " yn
+    case $yn in
+        [Yy]* )
+            services=$(service --status-all)
+            if [[ "$services" = *"apache2"* ]]
+            then
+                apache_service="apache2"
+            else
+                if [[ "$services" = *"apache"* ]]
+                then
+                    apache_service="apache"
+                else
+                    if [[ "$services" = *"httpd"* ]]
+                    then
+                        apache_service="httpd"
+                    else
+                        apache_service=""
+                    fi
+                fi
+            fi
+
+            if [ -z "$apache_service" ]
+            then
+                echo "Could not find apache service, skipping restart..."
+            else
+                service ${apache_service} restart
+            fi
+            break;;
+        [Nn]* )
+            break;;
+        * )
+            echo "Please answer y or n.";;
+    esac
+done
+
+while true
+do
+    read -p "Do you wish to rebuild the CKAN search index? [Y/N] " yn
+    case $yn in
+        [Yy]* )
+            if [ "$env" = "prod" ]
+            then
+                if [ ! -f ${config_directory}"/production.ini" ]
+                then
+                    config_file=${config_directory}"/development.ini"
+                else
+                    config_file=${config_directory}"/production.ini"
+                fi
+            else
+                if [ ! -f ${config_directory}"/development.ini" ]
+                then
+                    config_file=${config_directory}"/production.ini"
+                else
+                    config_file=${config_directory}"/development.ini"
+                fi
+            fi
+            ${venv_path}"/bin/paster" --plugin=ckan search-index rebuild --config=${config_file}
+            break;;
+        [Nn]* )
+            break;;
+        * )
+            echo "Please answer y or n.";;
+    esac
+done
