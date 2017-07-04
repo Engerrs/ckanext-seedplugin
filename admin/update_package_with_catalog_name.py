@@ -5,6 +5,7 @@ from sqlalchemy import create_engine
 from ConfigParser import ConfigParser
 from argparse import ArgumentParser
 import json
+from dateutil.parser import parse
 
 ValidationError = logic.ValidationError
 
@@ -36,11 +37,40 @@ datasets = requests.get(
 print("{0} datasets found".format(datasets['result']['count']))
 
 for idx, data in enumerate(datasets['result']['results']):
-    if 'layer_id' in data:
-        data['layer_list_name'] = data['layer_id']
-        data.pop('layer_id')
+    if 'last_modified' in data:
+        try:
+            data['last_modified'] = parse(data['last_modified']).strftime('%Y-%m-%d')
+        except:
+            if 'created' in data:
+                data['last_modified'] = data['created']
+            elif 'metadata_modified' in data:
+                data['last_modified'] = data['metadata_modified']
+            else:
+                data['last_modified'] = data['metadata_created']
+            data['last_modified'] = parse(data['last_modified']).strftime('%Y-%m-%d')
+
+    if 'resources' in data:
+        for resource in data['resources']:
+            if ('last_modified' in resource and (
+                    resource['last_modified'] is None or resource['last_modified'] == 'N/A')):
+                resource['last_modified'] = resource['created']
+
+            resource['last_modified'] = parse(resource['last_modified']).strftime('%Y-%m-%d')
+
+    if 'extras' in data:
+        new_extras = []
+        print("Analyzing {0}...".format(data['extras']))
+        for extra in data['extras']:
+            if 'key' in extra and 'value' in extra and extra['key'] == 'layer_id':
+                print("Adding layer list name: {0}".format(extra['value']))
+                data['layer_list_name'] = extra['value']
+            else:
+                new_extras.append(extra)
+        data['extras'] = new_extras
+
     if 'layer_catalog_name' not in data:
         data['layer_catalog_name'] = 'SEED_catalog'
+
     try:
         print("{0}. Updating dataset {1}.".format(idx, data['name']))
         r = requests.post(
@@ -54,6 +84,6 @@ for idx, data in enumerate(datasets['result']['results']):
         if r['success']:
             print("{0}. Dataset: {1} has been updated.".format(idx, data['name']))
         else:
-            print("{0}. Dataset: {1} is not updated.".format(idx, data['name']))
+            print("{0}. Dataset: {1} is not updated. Response was: {2}".format(idx, data['name'], r))
     except Exception as e:
             print type(e), e
