@@ -23,7 +23,8 @@
                 <div class="footer-col col-md-4 col-sm-4">
                     <div class="fcol-heading">Spatial</div>
                     <div class="list-group">
-                        <a class="list-group-item" href="http://geo.dev.edptest.info/EDP_Public_Viewer/Index.html?viewer=EDP_Public_Viewer">Environmental Map</a>
+                        {% set geocortexurl=h.get_geocortex_base_url() + '?viewer=EDP_Public_Viewer' -%}
+                        <a class="list-group-item" href="{{ geocortexurl }}">Environmental Map</a>
                     </div>
 
                 </div>

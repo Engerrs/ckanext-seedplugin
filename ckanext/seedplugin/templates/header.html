@@ -113,7 +113,8 @@
                         <a href="{{ g.site_url }}/dataset">DATASETS</a>
                     </li>
                     <li>
-                        <a href="http://geo.dev.edptest.info/EDP_Public_Viewer/Index.html?viewer=EDP_Public_Viewer">MAP</a>
+                        {% set geocortexurl=h.get_geocortex_base_url() + '?viewer=EDP_Public_Viewer' -%}
+                        <a href="{{ geocortexurl }}">MAP</a>
                     </li>
                     <li>
                         <a href="http://dev.edptest.info/edphome/feedback.aspx">FEEDBACK</a>

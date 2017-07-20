@@ -108,6 +108,11 @@ $( function() {
           return $(this).data('catalogname');
         };
       }).get();
+      var geocortex_base_url = $('.view-map-checkbox:checked').map(function () {
+        if($(this).data('geocortexbaseurl') != '') {
+          return $(this).data('geocortexbaseurl');
+        };
+      }).get();
       if (map_service_id.length > 0 && layer_list_name.length > 0 && layer_catalog_name.length > 0) {
         n_datasets_wom = map_service_id.filter(String).length
         var mservices = map_service_id.filter(function(elem, index, self) {
@@ -127,7 +132,7 @@ $( function() {
           layer_list_name_all.push(layer_list_name[i])
         }
         layer_list_name_all = layer_list_name_all.join(',');
-        main_link = 'http://geo.dev.edptest.info/EDP_DEV_Viewer/Index.html?viewer=EDP_DEV_Viewer&locale=en-AU&runWorkflow=AppendLayerCatalog&CatalogLayer=' + cataloglayer + '&MapServiceID=' + mservices + '&LayerListName=' + layer_list_name_all;
+        main_link = geocortex_base_url + '?viewer=EDP_DEV_Viewer&locale=en-AU&runWorkflow=AppendLayerCatalog&CatalogLayer=' + cataloglayer + '&MapServiceID=' + mservices + '&LayerListName=' + layer_list_name_all;
         view_on_map.removeClass('seed-disabled');
         view_on_map.attr('href', main_link);
         view_on_map.attr('title', 'Show selected Dataset on Map');
