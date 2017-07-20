@@ -5,12 +5,13 @@
                 <div class="footer-col col-md-4 col-sm-4">
                     <div class="fcol-heading">About the Portal</div>
                     <div class="list-group">
-                        <a class="list-group-item" href="http://dev.edptest.info/edphome/about.aspx">About</a>
+                        {% set sitecoreurl=h.get_sitecore_base_url() -%}
+                        <a class="list-group-item" href="{{ sitecoreurl + 'about.aspx' }}">About</a>
                         <a class="list-group-item" href="mailto:edptest@informed.com?Subject=Suggestions">Email</a>
-                        <a class="list-group-item" href="http://dev.edptest.info/edphome/feedback.aspx">Feedback</a>
-                        <a class="list-group-item" href="http://dev.edptest.info/edphome/accessibility.aspx">Accessibility</a>
-                        <a class="list-group-item" href="http://dev.edptest.info/edphome/copyright.aspx">Copyright And Disclaimer</a>
-                        <a class="list-group-item" href="http://dev.edptest.info/edphome/using-seed/Privacy%20help">Privacy Statement</a>
+                        <a class="list-group-item" href="{{ sitecoreurl + 'feedback.aspx' }}">Feedback</a>
+                        <a class="list-group-item" href="{{ sitecoreurl + 'accessibility.aspx' }}">Accessibility</a>
+                        <a class="list-group-item" href="{{ sitecoreurl + 'copyright.aspx' }}">Copyright And Disclaimer</a>
+                        <a class="list-group-item" href="{{ sitecoreurl + 'using-seed/Privacy%20help' }}">Privacy Statement</a>
                     </div>
                 </div>
                 <div class="footer-col col-md-4 col-sm-4">

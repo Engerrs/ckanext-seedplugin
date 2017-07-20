@@ -102,14 +102,14 @@
         <div class="nav-collapse collapse">
             {% block header_site_navigation %}
             <nav class="section navigation" style="font-weight: bold;">
+                {% set sitecoreurl=h.get_sitecore_base_url() -%}
                 <ul class="nav nav-pills" style="display:none;">
                     <li>
-                        <a href="http://dev.edptest.info/edphome/home.aspx">ENVIRONMENTAL DATA PORTAL</a>
+                        <a href="{{ sitecoreurl + 'home.aspx' }}">ENVIRONMENTAL DATA PORTAL</a>
                     </li>
                 </ul>
                 <ul class="nav nav-pills">
                     <li class="active">
-                        {% set dataseturl=request.url.split("/")[2]|replace("ckan.","") %}
                         <a href="{{ g.site_url }}/dataset">DATASETS</a>
                     </li>
                     <li>
@@ -117,13 +117,13 @@
                         <a href="{{ geocortexurl }}">MAP</a>
                     </li>
                     <li>
-                        <a href="http://dev.edptest.info/edphome/feedback.aspx">FEEDBACK</a>
+                        <a href="{{ sitecoreurl + 'feedback.aspx' }}">FEEDBACK</a>
                     </li>
                     <li>
-                        <a href="http://dev.edptest.info/edphome/using-seed.aspx" target="_blank">HELP</a>
+                        <a href="{{ sitecoreurl + 'using-seed.aspx' }}" target="_blank">HELP</a>
                     </li>
                     <li>
-                        <a href="http://dev.edptest.info/edphome/about.aspx">ABOUT</a>
+                        <a href="{{ sitecoreurl + 'about.aspx' }}">ABOUT</a>
                     </li>
                 </ul>
             </nav>

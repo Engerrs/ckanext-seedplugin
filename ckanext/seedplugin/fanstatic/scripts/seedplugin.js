@@ -132,7 +132,7 @@ $( function() {
           layer_list_name_all.push(layer_list_name[i])
         }
         layer_list_name_all = layer_list_name_all.join(',');
-        main_link = geocortex_base_url + '?viewer=EDP_DEV_Viewer&locale=en-AU&runWorkflow=AppendLayerCatalog&CatalogLayer=' + cataloglayer + '&MapServiceID=' + mservices + '&LayerListName=' + layer_list_name_all;
+        main_link = geocortex_base_url[0] + '?viewer=EDP_DEV_Viewer&locale=en-AU&runWorkflow=AppendLayerCatalog&CatalogLayer=' + cataloglayer + '&MapServiceID=' + mservices + '&LayerListName=' + layer_list_name_all;
         view_on_map.removeClass('seed-disabled');
         view_on_map.attr('href', main_link);
         view_on_map.attr('title', 'Show selected Dataset on Map');

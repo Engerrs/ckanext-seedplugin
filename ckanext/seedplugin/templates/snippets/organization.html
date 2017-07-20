@@ -3,10 +3,6 @@
 {# this takes you to old search page#}
 {% set url = h.url_for(controller='organization', action='read', id=organization.name) %}
 
-{#takes to new search page #}
-{% set dataseturl="http://dev.edptest.info" %}
-{% set orgurl=organization.display_name|replace(" ","%20") %}
-
   {% block info %}
   <div class="module module-narrow module-shallow context-info">
     {% if has_context_title %}
@@ -16,7 +12,7 @@
       {% block inner %}
       {% block image %}
         <div class="image">
-          <a href="{{dataseturl+"/edphome/SearchResults.aspx?q=&org="+orgurl }}">
+          <a href="{{ url }}">
             <img src="{{ organization.image_display_url or h.url_for_static('/base/images/placeholder-organization.png') }}" width="200" alt="{{ organization.name }}" />
           </a>
         </div>
