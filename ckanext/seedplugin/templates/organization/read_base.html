@@ -35,5 +35,5 @@
 {% block help_button %}
  {{ super() }}
  {# how to find out what content is currently being displayed? #}
- <a type="button" href="https://www.seed.nsw.gov.au/edphome/using-seed/refining-search.aspx" target= "_blank" class="btn pull-right seed-org-info-button"><i class="icon-info-sign"></i>How to Refine Search</a>
+ <a type="button" href="{{ h.get_sitecore_base_url() + 'using-seed/refining-search.aspx' }}" target= "_blank" class="btn pull-right seed-org-info-button"><i class="icon-info-sign"></i>How to Refine Search</a>
 {% endblock %}

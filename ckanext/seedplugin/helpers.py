@@ -14,6 +14,7 @@ def get_seed_helpers():
         'seed_facet_list': seed_facet_list,
         'seed_facet_remove': seed_facet_remove,
         'seed_all_facets_remove': seed_all_facets_remove,
+        'get_seed_contact_email': get_seed_contact_email,
         'get_sitecore_base_url': get_sitecore_base_url,
         'get_geocortex_base_url': get_geocortex_base_url,
         'visualise_on_map_has_web_map_layer': has_web_map_layer,
@@ -90,6 +91,9 @@ def seed_pagination(self, *args, **kwargs):
     return super(Page, self).pager(*args, **kwargs)
 
 Page.pager = seed_pagination
+
+def get_seed_contact_email():
+    return config.get('seed.contact_email', '').strip()
 
 def get_sitecore_base_url():
     return config.get('seed.sitecore.base_url', '').strip()

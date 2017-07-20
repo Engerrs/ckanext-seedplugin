@@ -7,7 +7,7 @@
                     <div class="list-group">
                         {% set sitecoreurl=h.get_sitecore_base_url() -%}
                         <a class="list-group-item" href="{{ sitecoreurl + 'about.aspx' }}">About</a>
-                        <a class="list-group-item" href="mailto:edptest@informed.com?Subject=Suggestions">Email</a>
+                        <a class="list-group-item" href="{{ 'mailto:' + h.get_seed_contact_email() + '?Subject=Suggestions' }}">Email</a>
                         <a class="list-group-item" href="{{ sitecoreurl + 'feedback.aspx' }}">Feedback</a>
                         <a class="list-group-item" href="{{ sitecoreurl + 'accessibility.aspx' }}">Accessibility</a>
                         <a class="list-group-item" href="{{ sitecoreurl + 'copyright.aspx' }}">Copyright And Disclaimer</a>

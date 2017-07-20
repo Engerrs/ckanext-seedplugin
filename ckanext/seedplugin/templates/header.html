@@ -67,7 +67,7 @@
         <hgroup class="{{ g.header_class }}">
 
             {% block header_logo %} {% if g.site_logo %}
-            <a class="logo pull-left" href="{{ h.url('http://dev.edptest.info') }}"><img src="{{ h.url_for_static_or_external(g.site_logo) }}" alt="{{ g.site_title }}" title="{{ g.site_title }}" /></a>
+            <a class="logo pull-left" href="{{ h.get_sitecore_base_url() + 'home.aspx' }}"><img src="{{ h.url_for_static_or_external(g.site_logo) }}" alt="{{ g.site_title }}" title="{{ g.site_title }}" /></a>
             <a class="logo pull-right" href="https://www.nsw.gov.au"><img src="https://s3-ap-southeast-2.amazonaws.com/is-dfsi-dev-s3-1/CKAN/public/Assets/logo_nsw_large.png" alt="NSW Government" title="NSW Government" /></a>
             {% else %}
             <h1>
