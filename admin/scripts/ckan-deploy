@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 extensions=()
-environments="prod uat dev"
+environments="prod uat sit dev"
 ckan_branch_prefix="seed-"
 ckanext_branch_prefix="seed-"
 config_directory="/etc/ckan/seed"
@@ -20,7 +20,7 @@ if [[ " $environments " =~ " $env " ]]
 then
     echo "Starting ${env} deployment..."
 else
-    echo "Please enter in either 'prod', 'dev' or 'uat' as second argument... exiting..."
+    echo "Please enter in either 'prod', 'dev', 'sit' or 'uat' as second argument... exiting..."
     exit
 fi
 
