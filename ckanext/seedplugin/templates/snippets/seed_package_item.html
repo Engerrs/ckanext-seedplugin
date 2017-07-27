@@ -28,12 +28,17 @@
             </div>
             {% block view_add_selection %}
               {% if package.map_type and package.map_service_id and package.layer_list_name and package.layer_catalog_name %}
-                {% set view_on_map=h.get_geocortex_base_url() + '?viewer=EDP_DEV_Viewer&locale=en-AU&runWorkflow=AppendLayerCatalog&CatalogLayer=' + package.layer_catalog_name +'.' + package.map_service_id + '.' + package.layer_list_name|replace(' ', '%20') +'&MapServiceID='+ package.map_service_id + '&LayerListName=' + package.layer_list_name|replace(' ', '%20') %}
+                {% set view_on_map=h.get_geocortex_base_url() + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + package.layer_catalog_name +'.' + package.map_service_id + '.' + package.layer_list_name|replace(' ', '%20') +'&MapServiceID='+ package.map_service_id + '&LayerListName=' + package.layer_list_name|replace(' ', '%20') %}
               {% else %}
                 {% set view_on_map='' %}
               {% endif %}
                 <div class="checkbox-dataset">
-                  <input type="checkbox" id='{{ package.id }}' value="{{counter}}" class="view-map-checkbox" name='view-on-map' {% if view_on_map %} data-mapservice="{{ package.map_service_id }}" data-listname="{{ package.layer_list_name }}" data-catalogname="{{ package.layer_catalog_name }}" data-geocortexbaseurl="{{ h.get_geocortex_base_url() }}" {% endif %} data-title="{{ package.title }}" data-name="{{ package.name }}"></input>
+                    <input type="checkbox" id='{{ package.id }}' value="{{ counter }}" class="view-map-checkbox"
+                           name='view-on-map' {% if view_on_map %} data-mapservice="{{ package.map_service_id }}"
+                           data-listname="{{ package.layer_list_name }}"
+                           data-catalogname="{{ package.layer_catalog_name }}"
+                           data-geocortexbaseurl="{{ h.get_geocortex_base_url() }}" {% endif %}
+                           data-title="{{ package.title }}" data-name="{{ package.name }}"/>
                   <label for="{{ package.id }}" class="view-on-map-label">Add to selection</label>
                 </div>
             {% endblock %}
@@ -72,7 +77,7 @@
             {% endblock %}
             {% block view_on_map %}
               {% if package.map_type and package.map_service_id and package.layer_list_name and package.layer_catalog_name %}
-                {% set mapurl=h.get_geocortex_base_url() + '?viewer=EDP_DEV_Viewer&locale=en-AU&runWorkflow=AppendLayerCatalog&CatalogLayer=' + package.layer_catalog_name +'.' + package.map_service_id + '.' + package.layer_list_name|replace(' ', '%20') +'&MapServiceID='+ package.map_service_id + '&LayerListName=' + package.layer_list_name|replace(' ', '%20') -%}
+                {% set mapurl=h.get_geocortex_base_url() + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + package.layer_catalog_name +'.' + package.map_service_id + '.' + package.layer_list_name|replace(' ', '%20') +'&MapServiceID='+ package.map_service_id + '&LayerListName=' + package.layer_list_name|replace(' ', '%20') -%}
               <a href="{{ mapurl }}" class="seed-dataset-button">View on Map</a>
               {% endif %}
             {% endblock %}
