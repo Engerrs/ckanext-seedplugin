@@ -124,15 +124,21 @@ $( function() {
         for (var i = 0; i < n_datasets_wom; i++) {
           all_fields.push([layer_catalog_name[i], map_service_id[i],layer_list_name[i]])
         }
-        var cataloglayer = all_fields.map(function(item){
-          return item.join('.');
+        var ctlg_layers_items = []
+        $.each(all_fields, function(index, value) {
+          var ctlg_name = value[0];
+          var srv_id = value[1];
+          var names = value[2].split(',');
+          $.each(names, function(index, value) {
+              ctlg_layers_items.push(String(ctlg_name + '.' + srv_id + '.' + value))
+            });
         });
-        cataloglayer = cataloglayer.join(',');
+        var ctlg_layers_items = ctlg_layers_items.join(',');
         for (var i = 0; i < n_datasets_wom; i++) {
           layer_list_name_all.push(layer_list_name[i])
         }
         layer_list_name_all = layer_list_name_all.join(',');
-        main_link = geocortex_base_url[0] + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + cataloglayer + '&MapServiceID=' + mservices + '&LayerListName=' + layer_list_name_all;
+        main_link = 'http://geo.dev.edptest.info/EDP_DEV_Viewer/Index.html?viewer=EDP_DEV_Viewer&locale=en-AU&runWorkflow=AppendLayerCatalog&CatalogLayer=' + ctlg_layers_items + '&MapServiceID=' + mservices + '&LayerListName=' + layer_list_name_all;
         view_on_map.removeClass('seed-disabled');
         view_on_map.attr('href', main_link);
         view_on_map.attr('title', 'Show selected Dataset on Map');
