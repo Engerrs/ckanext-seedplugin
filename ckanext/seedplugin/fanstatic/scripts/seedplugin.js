@@ -141,7 +141,7 @@ $( function() {
               });
             });
         });
-        main_link = 'http://geo.dev.edptest.info/EDP_DEV_Viewer/Index.html?viewer=EDP_DEV_Viewer&locale=en-AU&runWorkflow=AppendLayerCatalog&CatalogLayer=' + ctlg_layers_items.join(',') + '&MapServiceID=' + srv_ids.join(',') + '&LayerListName=' + names_list.join(',');
+        main_link = geocortex_base_url[0] + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + ctlg_layers_items.join(',') + '&MapServiceID=' + srv_ids.join(',') + '&LayerListName=' + names_list.join(',');
         view_on_map.removeClass('seed-disabled');
         view_on_map.attr('href', main_link);
         view_on_map.attr('title', 'Show selected Dataset on Map');

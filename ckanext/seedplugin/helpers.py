@@ -135,7 +135,7 @@ def seed_view_on_map_url(layer_catalog_name, map_service_id, layer_list_name):
         for i, name in enumerate(names):
             cataloglayers.append(layer_catalog_name + '.' + map_service_id_list[idx] + '.' + name)
 
-    mapurl = 'http://geo.dev.edptest.info/EDP_DEV_Viewer/Index.html?viewer=EDP_DEV_Viewer&locale=en-AU&runWorkflow=AppendLayerCatalog&CatalogLayer='
+    mapurl = get_sitecore_base_url()
     mapurl += ','.join(cataloglayers)
     mapurl += '&MapServiceID=' + ','.join(map_service_id_list) + '&LayerListName=' + ','.join(layer_list_name_list)
 
