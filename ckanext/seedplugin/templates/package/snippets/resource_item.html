@@ -9,7 +9,7 @@
 
 
 {% if "SEED Web Map" in res.format and c.pkg_dict.map_type and c.pkg_dict.map_service_id and c.pkg_dict.layer_list_name and c.pkg_dict.layer_catalog_name %}
-    {% set mapurl=h.get_geocortex_base_url() + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + c.pkg_dict.layer_catalog_name +'.' + c.pkg_dict.map_service_id + '.' + c.pkg_dict.layer_list_name|replace(' ', '%20') +'&MapServiceID='+ c.pkg_dict.map_service_id + '&LayerListName=' + c.pkg_dict.layer_list_name|replace(' ', '%20') -%}
+    {% set mapurl = h.seed_view_on_map_url(c.pkg_dict.layer_catalog_name, c.pkg_dict.map_service_id, c.pkg_dict.layer_list_name) %}
 {% else %}
     {% set mapurl="#" %}
     {% set display_map_text = "" %}

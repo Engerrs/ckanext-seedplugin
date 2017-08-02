@@ -77,7 +77,7 @@
             {% endblock %}
             {% block view_on_map %}
               {% if package.map_type and package.map_service_id and package.layer_list_name and package.layer_catalog_name %}
-              {% set mapurl = h.seed_view_on_map_url(package) %}
+              {% set mapurl = h.seed_view_on_map_url(package.layer_catalog_name, package.map_service_id, package.layer_list_name) %}
               <a href="{{ mapurl }}" class="seed-dataset-button">View on Map</a>
               {% endif %}
             {% endblock %}

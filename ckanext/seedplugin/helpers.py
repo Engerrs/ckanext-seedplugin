@@ -125,15 +125,18 @@ def get_web_map_layer_url(package_dict):
         return ''
 
 
-def seed_view_on_map_url(package):
+def seed_view_on_map_url(layer_catalog_name, map_service_id, layer_list_name):
+    layer_list_name_list = layer_list_name.split('&')
+    map_service_id_list = map_service_id.split('&')
     cataloglayers = []
-    mapurl = 'http://geo.dev.edptest.info/EDP_DEV_Viewer/Index.html?viewer=EDP_DEV_Viewer&locale=en-AU&runWorkflow=AppendLayerCatalog&CatalogLayer='
-    layer_list_name = package['layer_list_name'].split(',')
 
-    for name in layer_list_name:
-        cataloglayers.append(str(package['layer_catalog_name'] + '.' + package['map_service_id'] + '.' + name))
-    cataloglayers = ','.join(cataloglayers)
-    mapurl += cataloglayers
-    mapurl += str('&MapServiceID=' + package['map_service_id'] + '&LayerListName=' + package['layer_list_name'])
+    for idx, names in enumerate(layer_list_name_list):
+        names = names.split(',')
+        for i, name in enumerate(names):
+            cataloglayers.append(layer_catalog_name + '.' + map_service_id_list[idx] + '.' + name)
+
+    mapurl = 'http://geo.dev.edptest.info/EDP_DEV_Viewer/Index.html?viewer=EDP_DEV_Viewer&locale=en-AU&runWorkflow=AppendLayerCatalog&CatalogLayer='
+    mapurl += ','.join(cataloglayers)
+    mapurl += '&MapServiceID=' + ','.join(map_service_id_list) + '&LayerListName=' + ','.join(layer_list_name_list)
 
     return mapurl

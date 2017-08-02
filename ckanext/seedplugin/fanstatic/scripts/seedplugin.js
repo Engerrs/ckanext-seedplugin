@@ -120,25 +120,28 @@ $( function() {
         })
         mservices = mservices.join(',');
         var all_fields = [];
-        var layer_list_name_all = []
         for (var i = 0; i < n_datasets_wom; i++) {
           all_fields.push([layer_catalog_name[i], map_service_id[i],layer_list_name[i]])
         }
+        var srv_ids = []
+        var names_list = []
         var ctlg_layers_items = []
-        $.each(all_fields, function(index, value) {
+        $.each(all_fields, function(idx, value) {
           var ctlg_name = value[0];
-          var srv_id = value[1];
-          var names = value[2].split(',');
-          $.each(names, function(index, value) {
-              ctlg_layers_items.push(String(ctlg_name + '.' + srv_id + '.' + value))
+          var srv_id = value[1].split('&');
+          var srv_id_string = srv_id.join(',');
+          srv_ids.push(srv_id_string);
+          var names = value[2].split('&');
+          var names_string = names.join(',');
+          names_list.push(names_string);
+          $.each(names, function(index, values) {
+            values = values.split(',');
+            $.each(values, function(i, value) {
+              ctlg_layers_items.push(ctlg_name + '.' + srv_id[index] + '.' + value)
+              });
             });
         });
-        var ctlg_layers_items = ctlg_layers_items.join(',');
-        for (var i = 0; i < n_datasets_wom; i++) {
-          layer_list_name_all.push(layer_list_name[i])
-        }
-        layer_list_name_all = layer_list_name_all.join(',');
-        main_link = 'http://geo.dev.edptest.info/EDP_DEV_Viewer/Index.html?viewer=EDP_DEV_Viewer&locale=en-AU&runWorkflow=AppendLayerCatalog&CatalogLayer=' + ctlg_layers_items + '&MapServiceID=' + mservices + '&LayerListName=' + layer_list_name_all;
+        main_link = 'http://geo.dev.edptest.info/EDP_DEV_Viewer/Index.html?viewer=EDP_DEV_Viewer&locale=en-AU&runWorkflow=AppendLayerCatalog&CatalogLayer=' + ctlg_layers_items.join(',') + '&MapServiceID=' + srv_ids.join(',') + '&LayerListName=' + names_list.join(',');
         view_on_map.removeClass('seed-disabled');
         view_on_map.attr('href', main_link);
         view_on_map.attr('title', 'Show selected Dataset on Map');
