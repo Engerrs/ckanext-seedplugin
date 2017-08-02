@@ -13,6 +13,7 @@ import pylons.config as config
 import logging
 import ckan.lib.helpers as h
 import ckan.model as model
+from ckanext.seedplugin.helpers import seed_view_on_map_url
 
 
 log = logging.getLogger(__name__)
@@ -256,7 +257,7 @@ class SeedpluginPlugin(plugins.SingletonPlugin):
         pkg = model.Package.get(resource_dict['package_id'])
         seedwebmap = 'SEED Web Map'
         if resource_dict['format'].lower() == seedwebmap.lower() and 'map_type' in pkg.extras and 'layer_list_name' in pkg.extras and 'layer_catalog_name' in pkg.extras and 'map_service_id' in pkg.extras:
-            resource_dict['url'] = seed_helpers.get_geocortex_base_url() + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + pkg.extras['layer_catalog_name'] +'.' + pkg.extras['map_service_id'] + '.' + pkg.extras['layer_list_name'].replace(' ', '%20') +'&MapServiceID='+ pkg.extras['map_service_id'] + '&LayerListName=' + pkg.extras['layer_list_name'].replace(' ', '%20')
+            resource_dict['url'] = seed_view_on_map_url(pkg.extras['layer_catalog_name'], pkg.extras['map_service_id'], pkg.extras['layer_list_name'])
         return resource_dict
 
     def before_search(self, search_params):

@@ -5,7 +5,7 @@
 {% set pkg = c.pkg_dict %}
 
 {% if c.pkg_dict.map_type and c.pkg_dict.map_service_id and c.pkg_dict.layer_list_name and c.pkg_dict.layer_catalog_name %}
-    {% set mapurl = h.seed_view_on_map_url(c.pkg_dict) %}
+    {% set mapurl = h.seed_view_on_map_url(c.pkg_dict.layer_catalog_name, c.pkg_dict.map_service_id, c.pkg_dict.layer_list_name) %}
     <section class="module-content">
         <a href="{{ mapurl }}" class="btn btn-primary" alt="visualise on map">
             <i class="icon-medium icon-globe"></i>
