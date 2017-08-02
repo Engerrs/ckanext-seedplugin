@@ -18,7 +18,8 @@ def get_seed_helpers():
         'get_sitecore_base_url': get_sitecore_base_url,
         'get_geocortex_base_url': get_geocortex_base_url,
         'visualise_on_map_has_web_map_layer': has_web_map_layer,
-        'visualise_on_map_get_web_map_layer_url': get_web_map_layer_url
+        'visualise_on_map_get_web_map_layer_url': get_web_map_layer_url,
+        'seed_view_on_map_url': seed_view_on_map_url
     }
 
 
@@ -122,3 +123,17 @@ def get_web_map_layer_url(package_dict):
                 return resource['url']
     else:
         return ''
+
+
+def seed_view_on_map_url(package):
+    cataloglayers = []
+    mapurl = 'http://geo.dev.edptest.info/EDP_DEV_Viewer/Index.html?viewer=EDP_DEV_Viewer&locale=en-AU&runWorkflow=AppendLayerCatalog&CatalogLayer='
+    layer_list_name = package['layer_list_name'].split(',')
+
+    for name in layer_list_name:
+        cataloglayers.append(str(package['layer_catalog_name'] + '.' + package['map_service_id'] + '.' + name))
+    cataloglayers = ','.join(cataloglayers)
+    mapurl += cataloglayers
+    mapurl += str('&MapServiceID=' + package['map_service_id'] + '&LayerListName=' + package['layer_list_name'])
+
+    return mapurl
