@@ -28,7 +28,7 @@
             </div>
             {% block view_add_selection %}
               {% if package.map_type and package.map_service_id and package.layer_list_name and package.layer_catalog_name %}
-                {% set view_on_map=h.get_geocortex_base_url() + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + package.layer_catalog_name +'.' + package.map_service_id + '.' + package.layer_list_name|replace(' ', '%20') +'&MapServiceID='+ package.map_service_id + '&LayerListName=' + package.layer_list_name|replace(' ', '%20') %}
+                {% set view_on_map= h.seed_view_on_map_url(package.layer_catalog_name, package.map_service_id, package.layer_list_name) %}
               {% else %}
                 {% set view_on_map='' %}
               {% endif %}
