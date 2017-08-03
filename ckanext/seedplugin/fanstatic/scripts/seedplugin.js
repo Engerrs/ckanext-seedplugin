@@ -128,11 +128,27 @@ $( function() {
         var ctlg_layers_items = []
         $.each(all_fields, function(idx, value) {
           var ctlg_name = value[0];
-          var srv_id = value[1].split('&');
-          var srv_id_string = srv_id.join(',');
+          var srv_id;
+          var names;
+          var srv_id_string;
+          var names_string;
+          if (String(value[1]).indexOf("&") > -1) {
+            srv_id = value[1].split('&');
+            srv_id_string = srv_id.join(',');
+          }
+          else {
+            srv_id = [value[1]];
+            srv_id_string = srv_id;
+          };
+          if (String(value[2]).indexOf("&") > -1) {
+            names = value[2].split('&');
+            names_string = names.join(',');
+          }
+          else {
+            names = [value[2]];
+            names_string = names;
+          };
           srv_ids.push(srv_id_string);
-          var names = value[2].split('&');
-          var names_string = names.join(',');
           names_list.push(names_string);
           $.each(names, function(index, values) {
             values = values.split(',');
