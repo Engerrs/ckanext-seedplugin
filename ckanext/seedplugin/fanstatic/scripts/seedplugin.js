@@ -222,12 +222,18 @@ $( function() {
     }
     else {
       var data = JSON.parse(localStorage.getItem('view_on_map'));
-      var urlParams = new URLSearchParams(window.location.search);
-      var page = 'page_' + String(urlParams.get('page'));
-      if (page in data){
-        delete data[page];
+      if (data) {
+        var urlParams = new URLSearchParams(window.location.search);
+        var page = 'page_' + String(urlParams.get('page'));
+        if (page == 'page_null') {
+          page = 'page_1';
+        };
+        if (page in data){
+          delete data[page];
+          localStorage.view_on_map = JSON.stringify(data);
+        };
       };
-      localStorage.view_on_map = JSON.stringify(data);
+
       view_on_map.removeAttr('href').addClass('seed-disabled').attr('title', 'Select an item with View on Map to make available');
       map_datasets.removeAttr('href').removeAttr('data-toggle').addClass('seed-disabled').attr('title', 'Select to make available');
       $('.seed-filter-title-mobile-desktop1199').removeClass('seed-filter-title-mobile-320-979');
