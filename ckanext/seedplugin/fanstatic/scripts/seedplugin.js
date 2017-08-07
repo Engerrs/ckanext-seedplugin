@@ -181,7 +181,7 @@ $( function() {
               data[page][3] = n_datasets_wom;
             }
             if (n != data[page][n]) {
-              data[page][4] = n_datasets_wom;
+              data[page][4] = n;
             }
           }
           else {
