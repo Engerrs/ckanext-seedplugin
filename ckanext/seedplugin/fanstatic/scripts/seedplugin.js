@@ -166,7 +166,7 @@ $( function() {
               });
             });
         });
-        if (page) {
+        if (page && page !== 'page_null') {
           if (page in data) {
             if (ctlg_layers_items != data[page][0]) {
                 data[page][0] = ctlg_layers_items;
@@ -180,13 +180,16 @@ $( function() {
             if (n_datasets_wom != data[page][3]) {
               data[page][3] = n_datasets_wom;
             }
+            if (n != data[page][n]) {
+              data[page][4] = n_datasets_wom;
+            }
           }
           else {
-            data[page] = [ctlg_layers_items, srv_ids, names_list, n_datasets_wom];
+            data[page] = [ctlg_layers_items, srv_ids, names_list, n_datasets_wom, n];
           };
         }
         else {
-          data['page_1'] = [ctlg_layers_items, srv_ids, names_list, n_datasets_wom];
+          data['page_1'] = [ctlg_layers_items, srv_ids, names_list, n_datasets_wom, n];
         };
       }
       else {
@@ -202,16 +205,13 @@ $( function() {
       $.each(titles, function( index, value ) {
         $('.seed-selected-datasets-list').append("<li>" + value.data('title') + "<a class='seed-remove-selected-item' data-name="+ value.data('name') +" title='Remove dataset from selection'><span class='icon-remove-sign'></span></a></li>");
       });
-      if (page) {
+      if (page && page !== 'page_null') {
         if (page in data) {
           data[page][4] = n;
         }
         else {
           data[page] = ['', '', '', '', n];
         };
-      }
-      else {
-        data['page_1'] = ['', '', '', '', n];
       };
       $.each(data, function(idx, values) {
         if (!values[3]) {
