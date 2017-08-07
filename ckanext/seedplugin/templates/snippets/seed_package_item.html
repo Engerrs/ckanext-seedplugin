@@ -37,7 +37,7 @@
                            name='view-on-map' {% if view_on_map %} data-mapservice="{{ package.map_service_id }}"
                            data-listname="{{ package.layer_list_name }}"
                            data-catalogname="{{ package.layer_catalog_name }}"
-                           data-geocortexbaseurl="{{ h.get_geocortex_base_url() }}" {% endif %}
+                          {% endif %} data-geocortexbaseurl="{{ h.get_geocortex_base_url() }}"
                            data-title="{{ package.title }}" data-name="{{ package.name }}"/>
                   <label for="{{ package.id }}" class="view-on-map-label">Add to selection</label>
                 </div>
