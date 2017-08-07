@@ -14,7 +14,7 @@ $( function() {
       showOtherMonths: true,
       selectOtherMonths: true
     });
-    $('<label class="datepicker-button" for="ext_startdate"><i class="fa fa-th" style="position: relative;"></i></label>').insertAfter($("#ext_startdate"));
+    $('<label class="datepicker-button" for="ext_startdate"><i class="icon-th" style="position: relative;"></i></label>').insertAfter($("#ext_startdate"));
     if($('#ext_startdate_after').length > 0){
       remove_date = String(window.location.href);
       date = jQuery('#ext_startdate_after').text().trim();
@@ -26,7 +26,7 @@ $( function() {
       showOtherMonths: true,
       selectOtherMonths: true
     });
-    $('<label class="datepicker-button" for="ext_enddate"><i class="fa fa-th" style="position: relative;"></i></label>').insertAfter($("#ext_enddate"));
+    $('<label class="datepicker-button" for="ext_enddate"><i class="icon-th" style="position: relative;"></i></label>').insertAfter($("#ext_enddate"));
     if($('#ext_enddate_after').length > 0){
       remove_date = String(window.location.href);
       date = jQuery('#ext_enddate_after').text().trim();
@@ -77,8 +77,26 @@ $( function() {
     var expend_button =  $('.seed-datasets-expand-checked');
     var collapse_button =  $('.seed-datasets-collapse-checked');
     var n = inputs.length;
+    var ctlg_layers_all = [];
+    var srv_id_all = [];
+    var names_all = [];
+    var srv_id;
+    var names;
+    var srv_id_string;
+    var names_string;
+    var selected_datasets_number = 0;
+    var selected_number = 0;
 
     $('.seed-view-on-map-count').text( n + ' datasets in selection').css('opacity', '0.6');
+    var geocortex_base_url = $('.view-map-checkbox').map(function () {
+      if($(this).data('geocortexbaseurl') != '') {
+        return $(this).data('geocortexbaseurl');
+      };
+    }).get();
+    geocortex_base_url = geocortex_base_url[0];
+    var data = JSON.parse(localStorage.getItem('view_on_map'));
+    var urlParams = new URLSearchParams(window.location.search);
+    var page = 'page_' + String(urlParams.get('page'));
     if (n > 0) {
       $('.seed-view-on-map-count').css('opacity', '1');
       map_datasets.attr('href');
@@ -108,11 +126,6 @@ $( function() {
           return $(this).data('catalogname');
         };
       }).get();
-      var geocortex_base_url = $('.view-map-checkbox:checked').map(function () {
-        if($(this).data('geocortexbaseurl') != '') {
-          return $(this).data('geocortexbaseurl');
-        };
-      }).get();
       if (map_service_id.length > 0 && layer_list_name.length > 0 && layer_catalog_name.length > 0) {
         n_datasets_wom = map_service_id.filter(String).length
         var mservices = map_service_id.filter(function(elem, index, self) {
@@ -128,10 +141,6 @@ $( function() {
         var ctlg_layers_items = []
         $.each(all_fields, function(idx, value) {
           var ctlg_name = value[0];
-          var srv_id;
-          var names;
-          var srv_id_string;
-          var names_string;
           if (String(value[1]).indexOf("&") > -1) {
             srv_id = value[1].split('&');
             srv_id_string = srv_id.join(',');
@@ -157,9 +166,6 @@ $( function() {
               });
             });
         });
-        var data = JSON.parse(localStorage.getItem('view_on_map'));
-        var urlParams = new URLSearchParams(window.location.search);
-        var page = 'page_' + String(urlParams.get('page'));
         if (page) {
           if (page in data) {
             if (ctlg_layers_items != data[page][0]) {
@@ -171,39 +177,17 @@ $( function() {
             if (names_list != data[page][2]) {
                 data[page][2] = names_list;
             }
+            if (n_datasets_wom != data[page][3]) {
+              data[page][3] = n_datasets_wom;
+            }
           }
           else {
-            data[page] = [ctlg_layers_items, srv_ids, names_list];
+            data[page] = [ctlg_layers_items, srv_ids, names_list, n_datasets_wom];
           };
         }
         else {
-          data['page_1'] = [ctlg_layers_items, srv_ids, names_list];
+          data['page_1'] = [ctlg_layers_items, srv_ids, names_list, n_datasets_wom];
         };
-        var ctlg_layers_all = [];
-        var srv_id_all = [];
-        var names_all = [];
-
-        $.each(data, function(idx, values) {
-          $.each(values[0], function(index, layers) {
-            ctlg_layers_all.push(layers);
-          });
-          $.each(values[1], function(index, ids) {
-            srv_id_all.push(ids);
-          });
-          $.each(values[2], function(index, names) {
-            names_all.push(names);
-          });
-        });
-        localStorage.view_on_map = JSON.stringify(data);
-        main_link = geocortex_base_url[0] + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + ctlg_layers_all.join(',') + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',');
-        view_on_map.removeClass('seed-disabled');
-        view_on_map.attr('href', main_link);
-        view_on_map.attr('title', 'Show selected Dataset on Map');
-        $('.seed-view-on-map-count').append('<span title="Number of datasets with View on Map url."> ('+ n_datasets_wom +')</span>')
-        map_datasets.attr('href');
-        map_datasets.attr('data-toggle', 'dropdown');
-        map_datasets.removeClass('seed-disabled');
-        map_datasets.attr('title', 'View selection list');
       }
       else {
         if(!$('.seed-view-on-map-all').hasClass('seed-disabled')){
@@ -218,13 +202,51 @@ $( function() {
       $.each(titles, function( index, value ) {
         $('.seed-selected-datasets-list').append("<li>" + value.data('title') + "<a class='seed-remove-selected-item' data-name="+ value.data('name') +" title='Remove dataset from selection'><span class='icon-remove-sign'></span></a></li>");
       });
-
+      if (page) {
+        if (page in data) {
+          data[page][4] = n;
+        }
+        else {
+          data[page] = ['', '', '', '', n];
+        };
+      }
+      else {
+        data['page_1'] = ['', '', '', '', n];
+      };
+      $.each(data, function(idx, values) {
+        if (!values[3]) {
+          values[3] = 0;
+        }
+        selected_number += values[3];
+        selected_datasets_number += values[4];
+      });
+      localStorage.view_on_map = JSON.stringify(data);
+      $('.seed-view-on-map-count').text( selected_datasets_number + ' datasets in selection');
+      if (selected_number) {
+        $.each(data, function(idx, values) {
+          $.each(values[0], function(index, layers) {
+            ctlg_layers_all.push(layers);
+          });
+          $.each(values[1], function(index, ids) {
+            srv_id_all.push(ids);
+          });
+          $.each(values[2], function(index, names) {
+            names_all.push(names);
+          });
+        });
+        main_link = geocortex_base_url + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + ctlg_layers_all.join(',') + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',');
+        view_on_map.removeClass('seed-disabled');
+        view_on_map.attr('href', main_link);
+        view_on_map.attr('title', 'Show selected Dataset on Map');
+        map_datasets.attr('href');
+        map_datasets.attr('data-toggle', 'dropdown');
+        map_datasets.removeClass('seed-disabled');
+        map_datasets.attr('title', 'View selection list');
+        $('.seed-view-on-map-count').append('<span title="Number of datasets with View on Map url."> ('+ selected_number +')</span>');
+      };
     }
     else {
-      var data = JSON.parse(localStorage.getItem('view_on_map'));
       if (data) {
-        var urlParams = new URLSearchParams(window.location.search);
-        var page = 'page_' + String(urlParams.get('page'));
         if (page == 'page_null') {
           page = 'page_1';
         };
@@ -232,12 +254,43 @@ $( function() {
           delete data[page];
           localStorage.view_on_map = JSON.stringify(data);
         };
+        $.each(data, function(idx, values) {
+          if (!values[3]) {
+            values[3] = 0;
+          }
+          selected_number += values[3];
+          selected_datasets_number += values[4];
+        });
+        $('.seed-view-on-map-count').text( selected_datasets_number + ' datasets in selection').css('opacity', '1');
+        if (selected_number) {
+          $.each(data, function(idx, values) {
+            $.each(values[0], function(index, layers) {
+              ctlg_layers_all.push(layers);
+            });
+            $.each(values[1], function(index, ids) {
+              srv_id_all.push(ids);
+            });
+            $.each(values[2], function(index, names) {
+              names_all.push(names);
+            });
+          });
+          main_link = geocortex_base_url + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + ctlg_layers_all.join(',') + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',');
+          view_on_map.removeClass('seed-disabled');
+          view_on_map.attr('href', main_link);
+          view_on_map.attr('title', 'Show selected Dataset on Map');
+          map_datasets.attr('href');
+          map_datasets.attr('data-toggle', 'dropdown');
+          map_datasets.removeClass('seed-disabled');
+          map_datasets.attr('title', 'View selection list');
+          $('.seed-view-on-map-count').append('<span title="Number of datasets with View on Map url."> ('+ selected_number +')</span>');
+        };
+      }
+      else {
+        view_on_map.removeAttr('href').addClass('seed-disabled').attr('title', 'Select an item with View on Map to make available');
+        map_datasets.removeAttr('href').removeAttr('data-toggle').addClass('seed-disabled').attr('title', 'Select to make available');
+        $('.seed-filter-title-mobile-desktop1199').removeClass('seed-filter-title-mobile-320-979');
+        $('.seed-selections-box').removeClass('seed-selections-box-320-979');
       };
-
-      view_on_map.removeAttr('href').addClass('seed-disabled').attr('title', 'Select an item with View on Map to make available');
-      map_datasets.removeAttr('href').removeAttr('data-toggle').addClass('seed-disabled').attr('title', 'Select to make available');
-      $('.seed-filter-title-mobile-desktop1199').removeClass('seed-filter-title-mobile-320-979');
-      $('.seed-selections-box').removeClass('seed-selections-box-320-979');
     };
 
     if(expend_button.hasClass('seed-disable')){
