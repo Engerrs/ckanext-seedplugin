@@ -246,13 +246,12 @@ $( function() {
       };
     }
     else {
-      if (data) {
+      if (Object.keys(data).length > 0) {
         if (page == 'page_null') {
           page = 'page_1';
         };
         if (page in data){
           delete data[page];
-          localStorage.view_on_map = JSON.stringify(data);
         };
         $.each(data, function(idx, values) {
           if (!values[3]) {
@@ -261,28 +260,37 @@ $( function() {
           selected_number += values[3];
           selected_datasets_number += values[4];
         });
-        $('.seed-view-on-map-count').text( selected_datasets_number + ' datasets in selection').css('opacity', '1');
-        if (selected_number) {
-          $.each(data, function(idx, values) {
-            $.each(values[0], function(index, layers) {
-              ctlg_layers_all.push(layers);
+        if (selected_datasets_number > 0){
+          $('.seed-view-on-map-count').text( selected_datasets_number + ' datasets in selection').css('opacity', '1');
+          if (selected_number) {
+            $.each(data, function(idx, values) {
+              $.each(values[0], function(index, layers) {
+                ctlg_layers_all.push(layers);
+              });
+              $.each(values[1], function(index, ids) {
+                srv_id_all.push(ids);
+              });
+              $.each(values[2], function(index, names) {
+                names_all.push(names);
+              });
             });
-            $.each(values[1], function(index, ids) {
-              srv_id_all.push(ids);
-            });
-            $.each(values[2], function(index, names) {
-              names_all.push(names);
-            });
-          });
-          main_link = geocortex_base_url + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + ctlg_layers_all.join(',') + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',');
-          view_on_map.removeClass('seed-disabled');
-          view_on_map.attr('href', main_link);
-          view_on_map.attr('title', 'Show selected Dataset on Map');
-          map_datasets.attr('href');
-          map_datasets.attr('data-toggle', 'dropdown');
-          map_datasets.removeClass('seed-disabled');
-          map_datasets.attr('title', 'View selection list');
-          $('.seed-view-on-map-count').append('<span title="Number of datasets with View on Map url."> ('+ selected_number +')</span>');
+            localStorage.view_on_map = JSON.stringify(data);
+            main_link = geocortex_base_url + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + ctlg_layers_all.join(',') + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',');
+            view_on_map.removeClass('seed-disabled');
+            view_on_map.attr('href', main_link);
+            view_on_map.attr('title', 'Show selected Dataset on Map');
+            map_datasets.attr('href');
+            map_datasets.attr('data-toggle', 'dropdown');
+            map_datasets.removeClass('seed-disabled');
+            map_datasets.attr('title', 'View selection list');
+            $('.seed-view-on-map-count').append('<span title="Number of datasets with View on Map url."> ('+ selected_number +')</span>');
+          };
+        }
+        else {
+          view_on_map.removeAttr('href').addClass('seed-disabled').attr('title', 'Select an item with View on Map to make available');
+          map_datasets.removeAttr('href').removeAttr('data-toggle').addClass('seed-disabled').attr('title', 'Select to make available');
+          $('.seed-filter-title-mobile-desktop1199').removeClass('seed-filter-title-mobile-320-979');
+          $('.seed-selections-box').removeClass('seed-selections-box-320-979');
         };
       }
       else {
