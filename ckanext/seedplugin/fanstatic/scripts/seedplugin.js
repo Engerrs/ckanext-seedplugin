@@ -227,14 +227,14 @@ $( function() {
           $.each(values[0], function(index, layers) {
             ctlg_layers_all.push(layers);
           });
-          $.each(values[1], function(index, ids) {
-            srv_id_all.push(ids);
-          });
-          $.each(values[2], function(index, names) {
-            names_all.push(names);
-          });
+          // $.each(values[1], function(index, ids) {
+          //   srv_id_all.push(ids);
+          // });
+          // $.each(values[2], function(index, names) {
+          //   names_all.push(names);
+          // });
         });
-        main_link = geocortex_base_url + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + ctlg_layers_all.join(',') + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',');
+        main_link = geocortex_base_url + '&runWorkflow=AppendLayer&CatalogLayer=' + ctlg_layers_all.join(','); //  + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',')
         view_on_map.removeClass('seed-disabled');
         view_on_map.attr('href', main_link);
         view_on_map.attr('title', 'Show selected Dataset on Map');
@@ -267,15 +267,15 @@ $( function() {
               $.each(values[0], function(index, layers) {
                 ctlg_layers_all.push(layers);
               });
-              $.each(values[1], function(index, ids) {
-                srv_id_all.push(ids);
-              });
-              $.each(values[2], function(index, names) {
-                names_all.push(names);
-              });
+              // $.each(values[1], function(index, ids) {
+              //   srv_id_all.push(ids);
+              // });
+              // $.each(values[2], function(index, names) {
+              //   names_all.push(names);
+              // });
             });
             localStorage.view_on_map = JSON.stringify(data);
-            main_link = geocortex_base_url + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + ctlg_layers_all.join(',') + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',');
+            main_link = geocortex_base_url + '&runWorkflow=AppendLayer&CatalogLayer=' + ctlg_layers_all.join(','); //  + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',')
             view_on_map.removeClass('seed-disabled');
             view_on_map.attr('href', main_link);
             view_on_map.attr('title', 'Show selected Dataset on Map');
