@@ -135,8 +135,8 @@ def seed_view_on_map_url(layer_catalog_name, map_service_id, layer_list_name):
         for i, name in enumerate(names):
             cataloglayers.append(layer_catalog_name + '.' + map_service_id_list[idx] + '.' + name)
 
-    mapurl = get_geocortex_base_url() + '&runWorkflow=AppendLayerCatalog&CatalogLayer='
+    mapurl = get_geocortex_base_url() + '&runWorkflow=AppendLayer&CatalogLayer='
     mapurl += ','.join(cataloglayers)
-    mapurl += '&MapServiceID=' + ','.join(map_service_id_list) + '&LayerListName=' + ','.join(layer_list_name_list)
+    # mapurl += '&MapServiceID=' + ','.join(map_service_id_list) + '&LayerListName=' + ','.join(layer_list_name_list)
 
     return mapurl
