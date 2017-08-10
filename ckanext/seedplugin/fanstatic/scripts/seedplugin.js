@@ -246,7 +246,7 @@ $( function() {
       };
     }
     else {
-      if (Object.keys(data).length > 0) {
+      if (data !== null && Object.keys(data).length > 0) {
         if (page == 'page_null') {
           page = 'page_1';
         };
