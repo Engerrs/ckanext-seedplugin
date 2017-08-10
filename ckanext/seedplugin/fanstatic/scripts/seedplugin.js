@@ -234,7 +234,7 @@ $( function() {
           //   names_all.push(names);
           // });
         });
-        main_link = geocortex_base_url + '&runWorkflow=AppendLayer&CatalogLayer=' + ctlg_layers_all.join(','); //  + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',')
+        main_link = geocortex_base_url + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + ctlg_layers_all.join(','); //  + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',')
         view_on_map.removeClass('seed-disabled');
         view_on_map.attr('href', main_link);
         view_on_map.attr('title', 'Show selected Dataset on Map');
@@ -275,7 +275,7 @@ $( function() {
               // });
             });
             localStorage.view_on_map = JSON.stringify(data);
-            main_link = geocortex_base_url + '&runWorkflow=AppendLayer&CatalogLayer=' + ctlg_layers_all.join(','); //  + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',')
+            main_link = geocortex_base_url + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + ctlg_layers_all.join(','); //  + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',')
             view_on_map.removeClass('seed-disabled');
             view_on_map.attr('href', main_link);
             view_on_map.attr('title', 'Show selected Dataset on Map');
