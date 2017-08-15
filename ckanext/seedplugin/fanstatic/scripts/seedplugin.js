@@ -347,12 +347,15 @@ $( function() {
 
   $("body").on("click", ".seed-remove-selected-item", function() {
     if ($("body").find("[data-name='" + $(this).data('name') + "']").length > 0) {
-      $("body").find("[data-name='" + $(this).data('name') + "']").prop('checked', false);
-      countChecked();
+      // $("body").find("input[data-name='" + $(this).data('name') + "']").prop('checked', false);
+      $("body").find("input[data-name='" + $(this).data('name') + "']").click();
+      $("body").find(".seed-view-on-map-datasets").click();
+      // countChecked();
       $('.all-datasets-checkbox').removeClass('dataset-plus');
       $('.all-datasets-checkbox').addClass('checked_minus');
     }
     if ($('.checkbox-dataset input[type=checkbox]:checked').length == 0) {
+      $("body").find(".seed-select-items-list").removeClass('open');
       $('.all-datasets-checkbox').removeClass('dataset-plus');
       $('.all-datasets-checkbox').removeClass('checked_minus');
 
