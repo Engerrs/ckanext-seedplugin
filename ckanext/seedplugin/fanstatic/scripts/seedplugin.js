@@ -448,12 +448,16 @@ $(document).ready(function () {
             lgaNames.sort(function (a, b) {
                 return a.localeCompare(b, 'en', { 'sensitivity': 'base' });
             });
-
+            var urlParams = new URLSearchParams(window.location.search);
+            var lganame_param = urlParams.get('lga');
             for (index in lgaNames) {
-                var url_lag = String(window.location.search);
                 var lga_name = lgaNames[index].split(' ').join('+');
-                if (url_lag.indexOf(lga_name) != -1) {
+                if (lganame_param == lgaNames[index]) {
                   $('#select_lga').append('<option value="' + lgaNames[index] + '" aria-label="' + lgaNames[index] + '" selected="selected">' + lgaNames[index] + '</option>');
+                  var bbox_param = urlParams.get('ext_bbox');
+                  if (bbox_param != '' ) {
+                    $('#seed_ext_bbox').val(bbox_param);
+                  };
                 }
                 else {
                   $('#select_lga').append('<option value="' + lgaNames[index] + '" aria-label="' + lgaNames[index] + '" >' + lgaNames[index] + '</option>');
