@@ -34,7 +34,6 @@ $( function() {
     };
 
   var countChecked = function() {
-
     // sessionStorage functionality
     if (this === window && sessionStorage['all-checked'] == 'true') {
         $('#all-datasets-checkbox').prop('checked', true);
@@ -94,7 +93,6 @@ $( function() {
       };
     }).get();
     geocortex_base_url = geocortex_base_url[0];
-    var data = JSON.parse(localStorage.getItem('view_on_map'));
     var urlParams = new URLSearchParams(window.location.search);
     var page = 'page_' + String(urlParams.get('page'));
     if (n > 0) {
@@ -111,30 +109,61 @@ $( function() {
     //       $('.seed-filter-title-mobile-desktop1199').removeClass('seed-filter-title-mobile-320-979');
     //       $('.seed-selections-box').removeClass('seed-selections-box-320-979');
     //   }
-      var map_service_id = $('.view-map-checkbox:checked').map(function () {
-        if($(this).data('mapservice') != '') {
-          return $(this).data('mapservice');
+      var obj = {};
+      var list_selected_on_page = [];
+      var v_m_count = 0;
+      $.each($('.view-map-checkbox'), function(index, value) {
+        var dataset = $(value);
+        var ds_name = dataset.data('name')
+        if ($(this)['0'].checked) {
+          var ctlg_title = dataset.data('catalogname');
+          var mapserv = dataset.data('mapservice');
+          var list_name = dataset.data('listname');
+          var title = dataset.data('title');
+          var item_list = [];
+            item_list.push(ctlg_title, mapserv, list_name, title, ds_name);
+            obj[ds_name] = item_list;
+        }
+        else {
+          list_selected_on_page.push(ds_name);
+        }
+      });
+      if (sessionStorage.all_selected_ds) {
+        ds = JSON.parse(sessionStorage.getItem('all_selected_ds'));
+        obj = jQuery.extend(obj, ds);
+        $.each(list_selected_on_page, function(idx, value) {
+          if (obj[value]){
+            delete obj[value]
+          };
+        });
+        sessionStorage.all_selected_ds = JSON.stringify(obj);
+      }
+      else {
+        sessionStorage.setItem("all_selected_ds", JSON.stringify(obj));
+      };
+
+      d_n = Object.keys(obj).length;
+      var m_s_i = [];
+      var l_c_n = [];
+      var l_l_n = [];
+      $.each(obj, function(idx, value) {
+        if (value[0] && value[1] && value[2]) {
+          v_m_count += 1;
+          l_c_n.push(value[0]);
+          m_s_i.push(value[1]);
+          l_l_n.push(value[2]);
         };
-      }).get();
-      var layer_list_name = $('.view-map-checkbox:checked').map(function () {
-        if($(this).data('listname') != '') {
-          return $(this).data('listname');
-        };
-      }).get();
-      var layer_catalog_name = $('.view-map-checkbox:checked').map(function () {
-        if($(this).data('catalogname') != '') {
-          return $(this).data('catalogname');
-        };
-      }).get();
-      if (map_service_id.length > 0 && layer_list_name.length > 0 && layer_catalog_name.length > 0) {
-        n_datasets_wom = map_service_id.filter(String).length
-        var mservices = map_service_id.filter(function(elem, index, self) {
+      });
+
+      if (m_s_i.length > 0 && l_l_n.length > 0 && l_c_n.length > 0) {
+        n_datasets_wom = m_s_i.filter(String).length
+        var mservices = m_s_i.filter(function(elem, index, self) {
             return index == self.indexOf(elem);
         })
         mservices = mservices.join(',');
         var all_fields = [];
         for (var i = 0; i < n_datasets_wom; i++) {
-          all_fields.push([layer_catalog_name[i], map_service_id[i],layer_list_name[i]])
+          all_fields.push([l_c_n[i], m_s_i[i],l_l_n[i]])
         }
         var srv_ids = []
         var names_list = []
@@ -166,31 +195,7 @@ $( function() {
               });
             });
         });
-        if (page && page !== 'page_null') {
-          if (page in data) {
-            if (ctlg_layers_items != data[page][0]) {
-                data[page][0] = ctlg_layers_items;
-            }
-            if (srv_ids != data[page][1]) {
-                data[page][1] = srv_ids;
-            }
-            if (names_list != data[page][2]) {
-                data[page][2] = names_list;
-            }
-            if (n_datasets_wom != data[page][3]) {
-              data[page][3] = n_datasets_wom;
-            }
-            if (n != data[page][n]) {
-              data[page][4] = n;
-            }
-          }
-          else {
-            data[page] = [ctlg_layers_items, srv_ids, names_list, n_datasets_wom, n];
-          };
-        }
-        else {
-          data['page_1'] = [ctlg_layers_items, srv_ids, names_list, n_datasets_wom, n];
-        };
+        data1 = [ctlg_layers_items];
       }
       else {
         if(!$('.seed-view-on-map-all').hasClass('seed-disabled')){
@@ -198,43 +203,12 @@ $( function() {
           map_datasets.removeAttr('href').removeAttr('data-toggle').addClass('seed-disabled').attr('title', 'Select to make available');
         }
       }
-      var titles = $('.view-map-checkbox:checked').map(function () {
-        return $(this);
-      }).get();
       $('.seed-selected-datasets-list').empty();
-      $.each(titles, function( index, value ) {
-        $('.seed-selected-datasets-list').append("<li>" + value.data('title') + "<a class='seed-remove-selected-item' data-name="+ value.data('name') +" title='Remove dataset from selection'><span class='icon-remove-sign'></span></a></li>");
+      $.each(obj, function( index, value ) {
+        $('.seed-selected-datasets-list').append("<li>" + value[3] + "<a class='seed-remove-selected-item' data-name="+ value[4] +" title='Remove dataset from selection'><span class='icon-remove-sign'></span></a></li>");
       });
-      if (page && page !== 'page_null') {
-        if (page in data) {
-          data[page][4] = n;
-        }
-        else {
-          data[page] = ['', '', '', '', n];
-        };
-      };
-      $.each(data, function(idx, values) {
-        if (!values[3]) {
-          values[3] = 0;
-        }
-        selected_number += values[3];
-        selected_datasets_number += values[4];
-      });
-      localStorage.view_on_map = JSON.stringify(data);
-      $('.seed-view-on-map-count').text( selected_datasets_number + ' datasets in selection');
-      if (selected_number) {
-        $.each(data, function(idx, values) {
-          $.each(values[0], function(index, layers) {
-            ctlg_layers_all.push(layers);
-          });
-          // $.each(values[1], function(index, ids) {
-          //   srv_id_all.push(ids);
-          // });
-          // $.each(values[2], function(index, names) {
-          //   names_all.push(names);
-          // });
-        });
-        main_link = geocortex_base_url + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + ctlg_layers_all.join(','); //  + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',')
+      $('.seed-view-on-map-count').text(d_n + ' datasets in selection');
+        main_link = geocortex_base_url + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + data1.join(','); //  + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',')
         view_on_map.removeClass('seed-disabled');
         view_on_map.attr('href', main_link);
         view_on_map.attr('title', 'Show selected Dataset on Map');
@@ -242,63 +216,101 @@ $( function() {
         map_datasets.attr('data-toggle', 'dropdown');
         map_datasets.removeClass('seed-disabled');
         map_datasets.attr('title', 'View selection list');
-        $('.seed-view-on-map-count').append('<span title="Number of datasets with View on Map url."> ('+ selected_number +')</span>');
-      };
+        $('.seed-view-on-map-count').append('<span title="Number of datasets with View on Map url."> ('+ v_m_count +')</span>');
     }
     else {
-      if (data !== null && Object.keys(data).length > 0) {
-        if (page == 'page_null') {
-          page = 'page_1';
-        };
-        if (page in data){
-          delete data[page];
-        };
-        $.each(data, function(idx, values) {
-          if (!values[3]) {
-            values[3] = 0;
-          }
-          selected_number += values[3];
-          selected_datasets_number += values[4];
-        });
-        if (selected_datasets_number > 0){
-          $('.seed-view-on-map-count').text( selected_datasets_number + ' datasets in selection').css('opacity', '1');
-          if (selected_number) {
-            $.each(data, function(idx, values) {
-              $.each(values[0], function(index, layers) {
-                ctlg_layers_all.push(layers);
-              });
-              // $.each(values[1], function(index, ids) {
-              //   srv_id_all.push(ids);
-              // });
-              // $.each(values[2], function(index, names) {
-              //   names_all.push(names);
-              // });
+        if (sessionStorage.all_selected_ds) {
+          obj = JSON.parse(sessionStorage.getItem('all_selected_ds'));
+          if (Object.keys(obj).length != 0) {
+            $.each($('.view-map-checkbox'), function(index, value) {
+              var dataset = $(value);
+              var ds_name = dataset.data('name');
+              if (obj[ds_name]){
+                delete obj[ds_name]
+              };
             });
-            localStorage.view_on_map = JSON.stringify(data);
-            main_link = geocortex_base_url + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + ctlg_layers_all.join(','); //  + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',')
-            view_on_map.removeClass('seed-disabled');
-            view_on_map.attr('href', main_link);
-            view_on_map.attr('title', 'Show selected Dataset on Map');
-            map_datasets.attr('href');
-            map_datasets.attr('data-toggle', 'dropdown');
-            map_datasets.removeClass('seed-disabled');
-            map_datasets.attr('title', 'View selection list');
-            $('.seed-view-on-map-count').append('<span title="Number of datasets with View on Map url."> ('+ selected_number +')</span>');
-          };
-        }
-        else {
+            d_n = Object.keys(obj).length;
+            var v_m_count = 0;
+            var m_s_i = [];
+            var l_c_n = [];
+            var l_l_n = [];
+            $.each(obj, function(idx, value) {
+              if (value[0] && value[1] && value[2]) {
+                v_m_count += 1;
+                l_c_n.push(value[0]);
+                m_s_i.push(value[1]);
+                l_l_n.push(value[2]);
+              };
+            });
+            if (m_s_i.length > 0 && l_l_n.length > 0 && l_c_n.length > 0) {
+              n_datasets_wom = m_s_i.filter(String).length
+              var mservices = m_s_i.filter(function(elem, index, self) {
+                  return index == self.indexOf(elem);
+              })
+              mservices = mservices.join(',');
+              var all_fields = [];
+              for (var i = 0; i < n_datasets_wom; i++) {
+                all_fields.push([l_c_n[i], m_s_i[i],l_l_n[i]])
+              }
+              var srv_ids = []
+              var names_list = []
+              var ctlg_layers_items = []
+              $.each(all_fields, function(idx, value) {
+                var ctlg_name = value[0];
+                if (String(value[1]).indexOf("&") > -1) {
+                  srv_id = value[1].split('&');
+                  srv_id_string = srv_id.join(',');
+                }
+                else {
+                  srv_id = [value[1]];
+                  srv_id_string = srv_id.join(',');
+                };
+                if (String(value[2]).indexOf("&") > -1) {
+                  names = value[2].split('&');
+                  names_string = names.join(',');
+                }
+                else {
+                  names = [value[2]];
+                  names_string = names.join(',');
+                };
+                srv_ids.push(srv_id_string);
+                names_list.push(names_string);
+                $.each(names, function(index, values) {
+                  values = values.split(',');
+                  $.each(values, function(i, value) {
+                    ctlg_layers_items.push(ctlg_name + '.' + srv_id[index] + '.' + value)
+                    });
+                  });
+              });
+              data1 = [ctlg_layers_items];
+              $('.seed-selected-datasets-list').empty();
+              $.each(obj, function( index, value ) {
+                $('.seed-selected-datasets-list').append("<li>" + value[3] + "<a class='seed-remove-selected-item' data-name="+ value[4] +" title='Remove dataset from selection'><span class='icon-remove-sign'></span></a></li>");
+              });
+              $('.seed-view-on-map-count').text(d_n + ' datasets in selection');
+              main_link = geocortex_base_url + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + data1.join(','); //  + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',')
+              view_on_map.removeClass('seed-disabled');
+              view_on_map.attr('href', main_link);
+              view_on_map.attr('title', 'Show selected Dataset on Map');
+              map_datasets.attr('href');
+              map_datasets.attr('data-toggle', 'dropdown');
+              map_datasets.removeClass('seed-disabled');
+              map_datasets.attr('title', 'View selection list');
+              $('.seed-view-on-map-count').append('<span title="Number of datasets with View on Map url."> ('+ v_m_count +')</span>');
+            }
+        } else {
           view_on_map.removeAttr('href').addClass('seed-disabled').attr('title', 'Select an item with View on Map to make available');
           map_datasets.removeAttr('href').removeAttr('data-toggle').addClass('seed-disabled').attr('title', 'Select to make available');
           $('.seed-filter-title-mobile-desktop1199').removeClass('seed-filter-title-mobile-320-979');
           $('.seed-selections-box').removeClass('seed-selections-box-320-979');
-        };
+        }
       }
       else {
         view_on_map.removeAttr('href').addClass('seed-disabled').attr('title', 'Select an item with View on Map to make available');
         map_datasets.removeAttr('href').removeAttr('data-toggle').addClass('seed-disabled').attr('title', 'Select to make available');
         $('.seed-filter-title-mobile-desktop1199').removeClass('seed-filter-title-mobile-320-979');
         $('.seed-selections-box').removeClass('seed-selections-box-320-979');
-      };
+      }
     };
 
     if(expend_button.hasClass('seed-disable')){
@@ -322,7 +334,6 @@ $( function() {
   $('.all-datasets-checkbox ').on('change', function(){
     if(!$('#all-datasets-checkbox').prop('checked')) {
       sessionStorage.setItem('all-checked', false);
-      localStorage.view_on_map = JSON.stringify({});
       $( "input[type='checkbox'].view-map-checkbox" ).prop('checked', false);
       var inputs = $( ".view-map-checkbox:checked" );
       var n = inputs.length;
@@ -335,7 +346,7 @@ $( function() {
      //}
     }
     else {
-      sessionStorage.clear();
+      // sessionStorage.clear();
       sessionStorage.setItem('all-checked', true);
       $( "input[type='checkbox'].view-map-checkbox" ).prop('checked', true);
       var inputs = $( ".view-map-checkbox:checked" );
@@ -346,18 +357,24 @@ $( function() {
   });
 
   $("body").on("click", ".seed-remove-selected-item", function() {
-    if ($("body").find("[data-name='" + $(this).data('name') + "']").length > 0) {
-      // $("body").find("input[data-name='" + $(this).data('name') + "']").prop('checked', false);
+    var name = $(this).data('name');
+    obj = JSON.parse(sessionStorage.getItem('all_selected_ds'));
+    if (obj[name]){
+        delete obj[name]
+      sessionStorage.all_selected_ds = JSON.stringify(obj);
+    }
+    if ($("body").find("input[data-name='" + name + "']").length > 0) {
+      if (Object.keys(obj).length == 0) {
+        $("body").find(".seed-view-on-map-datasets").click();
+      };
       $("body").find("input[data-name='" + $(this).data('name') + "']").click();
       $("body").find(".seed-view-on-map-datasets").click();
-      // countChecked();
-      $('.all-datasets-checkbox').removeClass('dataset-plus');
-      $('.all-datasets-checkbox').addClass('checked_minus');
     }
-    if ($('.checkbox-dataset input[type=checkbox]:checked').length == 0) {
-      $("body").find(".seed-select-items-list").removeClass('open');
-      $('.all-datasets-checkbox').removeClass('dataset-plus');
-      $('.all-datasets-checkbox').removeClass('checked_minus');
+    else {
+      if (Object.keys(obj).length == 0) {
+        $("body").find(".seed-view-on-map-datasets").click();
+      };
+      countChecked();
 
     }
   });
@@ -417,9 +434,6 @@ $( function() {
 });
 
 $(document).ready(function () {
-  if (!localStorage.view_on_map) {
-    localStorage.setItem("view_on_map", JSON.stringify({}));
-  };
   jQuery('.seed-filters-collapsing').children().each(function(index, el) {
     if(jQuery(this).find('li').hasClass('active')) {
       jQuery(this).find('h2').removeClass('collapsed');
