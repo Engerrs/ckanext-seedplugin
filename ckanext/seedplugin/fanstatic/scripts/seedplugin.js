@@ -197,6 +197,10 @@ $( function() {
             });
         });
         data1 = [ctlg_layers_items];
+        main_link = geocortex_base_url + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + data1.join(','); //  + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',')
+        view_on_map.removeClass('seed-disabled');
+        view_on_map.attr('href', main_link);
+        view_on_map.attr('title', 'Show selected Dataset on Map');
       }
       else {
         if(!$('.seed-view-on-map-all').hasClass('seed-disabled')){
@@ -208,16 +212,14 @@ $( function() {
       $.each(obj, function( index, value ) {
         $('.seed-selected-datasets-list').append("<li>" + value[3] + "<a class='seed-remove-selected-item' data-name="+ value[4] +" title='Remove dataset from selection'><span class='icon-remove-sign'></span></a></li>");
       });
+      map_datasets.attr('href');
+      map_datasets.attr('data-toggle', 'dropdown');
+      map_datasets.removeClass('seed-disabled');
+      map_datasets.attr('title', 'View selection list');
       $('.seed-view-on-map-count').text(d_n + ' datasets in selection');
-        main_link = geocortex_base_url + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + data1.join(','); //  + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',')
-        view_on_map.removeClass('seed-disabled');
-        view_on_map.attr('href', main_link);
-        view_on_map.attr('title', 'Show selected Dataset on Map');
-        map_datasets.attr('href');
-        map_datasets.attr('data-toggle', 'dropdown');
-        map_datasets.removeClass('seed-disabled');
-        map_datasets.attr('title', 'View selection list');
-        $('.seed-view-on-map-count').append('<span title="Number of datasets with View on Map url."> ('+ v_m_count +')</span>');
+      if (v_m_count > 0) {
+            $('.seed-view-on-map-count').append('<span title="Number of datasets with View on Map url."> ('+ v_m_count +')</span>');
+      };
     }
     else {
         if (sessionStorage.all_selected_ds) {
@@ -243,6 +245,7 @@ $( function() {
                 l_l_n.push(value[2]);
               };
             });
+            var data1 = [];
             if (m_s_i.length > 0 && l_l_n.length > 0 && l_c_n.length > 0) {
               n_datasets_wom = m_s_i.filter(String).length
               var mservices = m_s_i.filter(function(elem, index, self) {
@@ -283,22 +286,29 @@ $( function() {
                     });
                   });
               });
-              data1 = [ctlg_layers_items];
+              data1.push(ctlg_layers_items);
               $('.seed-selected-datasets-list').empty();
-              $.each(obj, function( index, value ) {
-                $('.seed-selected-datasets-list').append("<li>" + value[3] + "<a class='seed-remove-selected-item' data-name="+ value[4] +" title='Remove dataset from selection'><span class='icon-remove-sign'></span></a></li>");
-              });
-              $('.seed-view-on-map-count').text(d_n + ' datasets in selection');
               main_link = geocortex_base_url + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + data1.join(','); //  + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',')
-              view_on_map.removeClass('seed-disabled');
               view_on_map.attr('href', main_link);
+              view_on_map.removeClass('seed-disabled');
               view_on_map.attr('title', 'Show selected Dataset on Map');
+            }
+            if (d_n > 0) {
               map_datasets.attr('href');
               map_datasets.attr('data-toggle', 'dropdown');
               map_datasets.removeClass('seed-disabled');
               map_datasets.attr('title', 'View selection list');
-              $('.seed-view-on-map-count').append('<span title="Number of datasets with View on Map url."> ('+ v_m_count +')</span>');
-            }
+              $.each(obj, function( index, value ) {
+                $('.seed-selected-datasets-list').append("<li>" + value[3] + "<a class='seed-remove-selected-item' data-name="+ value[4] +" title='Remove dataset from selection'><span class='icon-remove-sign'></span></a></li>");
+              });
+              $('.seed-view-on-map-count').text(d_n + ' datasets in selection');
+              if (v_m_count > 0) {
+                $('.seed-view-on-map-count').append('<span title="Number of datasets with View on Map url."> ('+ v_m_count +')</span>');
+              };
+              if (data1.length == 0) {
+                view_on_map.removeAttr('href').addClass('seed-disabled').attr('title', 'Select an item with View on Map to make available');
+              }
+            };
         } else {
           view_on_map.removeAttr('href').addClass('seed-disabled').attr('title', 'Select an item with View on Map to make available');
           map_datasets.removeAttr('href').removeAttr('data-toggle').addClass('seed-disabled').attr('title', 'Select to make available');
