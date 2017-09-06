@@ -120,8 +120,9 @@ $( function() {
           var mapserv = dataset.data('mapservice');
           var list_name = dataset.data('listname');
           var title = dataset.data('title');
+          var ds_id = dataset['0']['id'];
           var item_list = [];
-            item_list.push(ctlg_title, mapserv, list_name, title, ds_name);
+            item_list.push(ctlg_title, mapserv, list_name, title, ds_name, ds_id);
             obj[ds_name] = item_list;
         }
         else {
@@ -360,7 +361,10 @@ $( function() {
     var name = $(this).data('name');
     obj = JSON.parse(sessionStorage.getItem('all_selected_ds'));
     if (obj[name]){
-        delete obj[name]
+      if (sessionStorage[obj[name][5]]) {
+        delete sessionStorage[obj[name][5]]
+      };
+      delete obj[name];
       sessionStorage.all_selected_ds = JSON.stringify(obj);
     }
     if ($("body").find("input[data-name='" + name + "']").length > 0) {
