@@ -287,12 +287,12 @@ $( function() {
                   });
               });
               data1.push(ctlg_layers_items);
-              $('.seed-selected-datasets-list').empty();
               main_link = geocortex_base_url + '&runWorkflow=AppendLayerCatalog&CatalogLayer=' + data1.join(','); //  + '&MapServiceID=' + srv_id_all.join(',') + '&LayerListName=' + names_all.join(',')
               view_on_map.attr('href', main_link);
               view_on_map.removeClass('seed-disabled');
               view_on_map.attr('title', 'Show selected Dataset on Map');
             }
+            $('.seed-selected-datasets-list').empty();
             if (d_n > 0) {
               map_datasets.attr('href');
               map_datasets.attr('data-toggle', 'dropdown');
