@@ -84,7 +84,8 @@ class SEEDController(BaseController):
             params_req = eval(value[17:-1])
         for (param, value) in params_req:
             if param not in ['q', 'page', 'sort'] \
-                    and len(value) and not param.startswith('_'):
+                    and len(value) and not param.startswith('_') \
+                    and param != 'per_page':
                 if not param.startswith('ext_'):
                     c.fields.append((param, value))
                     fq += ' %s:"%s"' % (param, value)
