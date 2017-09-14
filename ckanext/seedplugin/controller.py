@@ -80,9 +80,12 @@ class SEEDController(BaseController):
         c.fields_grouped = {}
         search_extras = {}
         fq = ''
+        q = request.params.get('q', u'')
         for (param, value) in request.params.items():
             params_req = eval(value[17:-1])
         for (param, value) in params_req:
+            if param == 'q' and not q:
+                q = value
             if param not in ['q', 'page', 'sort'] \
                     and len(value) and not param.startswith('_') \
                     and param != 'per_page':
@@ -132,6 +135,7 @@ class SEEDController(BaseController):
         c.facet_titles = facets
 
         data_dict = {
+            'q': q,
             'fq': fq.strip(),
             'facet.field': facets.keys(),
             'rows': 1000,
